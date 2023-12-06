@@ -40,6 +40,10 @@ def grouper(iterable, n, fillvalue=None):
     Collect data into fixed-length chunks:
     grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx
 
+    >>> li = [1, 2, 3, 4]
+    >>> [list(t) for t in helper.grouper(li, 2)]
+    [[1, 2], [3, 4]]
+
     (from Peter Norvig's pytudes)
     """
     args = [iter(iterable)] * n
