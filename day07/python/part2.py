@@ -113,7 +113,7 @@ class Game:
         self.parse(lines)
 
     def start(self) -> None:
-        self.buckets: dict[HandType, list[str]] = self.get_buckets(self.hands)
+        self.buckets = self.get_buckets(self.hands)
         self.sort_buckets()
         self.calculate_result()
 
