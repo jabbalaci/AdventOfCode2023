@@ -108,7 +108,7 @@ class Game:
             # print("# after:", li)
             # print("---")
 
-    def get_buckets(self, hands: list[str]) -> dict:
+    def get_buckets(self, hands: list[str]) -> dict[HandType, list[str]]:
         d: dict[HandType, list[str]] = {}
         for hand in hands:
             _type = get_type(hand)
