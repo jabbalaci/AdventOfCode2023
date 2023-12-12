@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
 
+"""
+Similar to version 1a, but here we don't do
+physical expansion (that'd be too expensive for Part 2).
+
+We simply keep track of the empty rows and empty columns.
+"""
+
 import itertools
 from typing import NamedTuple
 
@@ -55,22 +62,22 @@ class Expansion:
         return result
 
     def expand_rows(self) -> None:
-        empty_rows: list[int] = self.collect_empty_rows()
-        empty_row: list[char] = list("." * self.no_of_rows)
-        offset = 0
-        for idx in empty_rows:
-            self.lines.insert(idx + offset, empty_row.copy())
-            offset += 1
+        self.empty_rows: list[int] = self.collect_empty_rows()
+        # empty_row: list[char] = list("." * self.no_of_rows)
+        # offset = 0
+        # for idx in empty_rows:
+        # self.lines.insert(idx + offset, empty_row.copy())
+        # offset += 1
         #
 
     def expand_cols(self) -> None:
-        empty_cols: list[int] = self.collect_empty_cols()
-        offset = 0
-        for idx in empty_cols:
-            for line in self.lines:
-                line.insert(idx + offset, ".")
-            #
-            offset += 1
+        self.empty_cols: list[int] = self.collect_empty_cols()
+        # offset = 0
+        # for idx in empty_cols:
+        # for line in self.lines:
+        # line.insert(idx + offset, ".")
+        #
+        # offset += 1
         #
 
     def debug(self) -> None:
@@ -82,11 +89,15 @@ class Expansion:
 
 
 class Universe:
-    def __init__(self, fname: str) -> None:
+    def __init__(self, fname: str, duplicates: int) -> None:
+        # if there's an empty row/column, how many duplicates to add:
+        self.duplicates = duplicates - 1
         exp = Expansion(fname)
         self.lines: list[str] = exp.process()
         self.no_of_rows: int = len(self.lines)
         self.no_of_cols: int = len(self.lines[0])
+        self.empty_rows: set[int] = set(exp.empty_rows)
+        self.empty_cols: set[int] = set(exp.empty_cols)
 
     def collect_galaxies(self) -> list[Point]:
         result: list[Point] = []
@@ -101,9 +112,28 @@ class Universe:
         #
         return result
 
-    def distance_between(self, p1: Point, p2: Point) -> int:
-        """Manhattan distance"""
-        return abs(p1.row - p2.row) + abs(p1.col - p2.col)
+    # def distance_between(self, p1: Point, p2: Point) -> int:
+    # """Manhattan distance"""
+    # return abs(p1.row - p2.row) + abs(p1.col - p2.col)
+
+    def distance_between_v2(self, p1: Point, p2: Point) -> int:
+        """modified Manhattan distance (with duplicates)"""
+        rows = sorted([p1.row, p2.row])
+        cols = sorted([p1.col, p2.col])
+        total = 0
+        for row in range(rows[0], rows[1]):
+            total += 1
+            if row in self.empty_rows:
+                total += self.duplicates
+            #
+        #
+        for col in range(cols[0], cols[1]):
+            total += 1
+            if col in self.empty_cols:
+                total += self.duplicates
+            #
+        #
+        return total
 
     def start(self) -> None:
         self.galaxies = self.collect_galaxies()
@@ -111,7 +141,7 @@ class Universe:
 
         total = 0
         for p1, p2 in self.combinations:
-            total += self.distance_between(p1, p2)
+            total += self.distance_between_v2(p1, p2)
         #
         print(total)
 
@@ -124,16 +154,17 @@ class Universe:
         # print("---")
         # for comb in self.combinations:
         # print(comb)
+        print("---")
+        print(self.empty_rows)
+        print(self.empty_cols)
 
 
 # ---------------------------------------------------------------------------
 
 
 def main() -> None:
-    # fname = "example.txt"
-    fname = "input.txt"
-
-    u = Universe(fname)
+    # u = Universe("example.txt", 2)
+    u = Universe("input.txt", 2)
 
     u.start()
 
