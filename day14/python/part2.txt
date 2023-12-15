@@ -1,0 +1,69 @@
+Question:
+
+Run the spin cycle for 1_000_000_000 cycles. 
+Afterward, what is the total load on the north support beams?
+
+example.txt
+===========
+If you run it for 1_000_000_000 cycles, it'd be too slow.
+Instead, I ran it for 30 cycles and investigated the output:
+
+$ pypy3 part2.py
+
+iter: 1, value: 87
+iter: 2, value: 69
+iter: 3, value: 69
+iter: 4, value: 69
+iter: 5, value: 65
+iter: 6, value: 64
+iter: 7, value: 65
+iter: 8, value: 63
+iter: 9, value: 68
+iter: 10, value: 69
+iter: 11, value: 69
+iter: 12, value: 65
+iter: 13, value: 64
+iter: 14, value: 65
+iter: 15, value: 63
+iter: 16, value: 68
+iter: 17, value: 69
+iter: 18, value: 69
+iter: 19, value: 65
+iter: 20, value: 64
+iter: 21, value: 65
+iter: 22, value: 63
+iter: 23, value: 68
+iter: 24, value: 69
+iter: 25, value: 69
+iter: 26, value: 65
+iter: 27, value: 64
+iter: 28, value: 65
+iter: 29, value: 63
+iter: 30, value: 68
+
+You can see that there is a repeating pattern:
+
+index:  0   1   2   3   4   5   6
+value: 68, 69, 69, 65, 64, 65, 63
+
+After 63, you get 68 again, etc.
+
+Let's pick a cycle where we have the first element
+of the repeating cycle, e.g. iteration 23.
+
+1000000000 - 23 = 999999977
+
+999999977 % 7 = 4
+
+where 7 is the length of the repeating pattern
+
+From the repeating pattern, pick the element 
+at index position 4, which is 64. This is the
+answer to the question.
+
+
+input.txt
+=========
+Do the same thing like in the previous example.
+I ran my program for 300 cycles and then I could
+identify the repeating pattern.
