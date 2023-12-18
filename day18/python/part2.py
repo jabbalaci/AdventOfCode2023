@@ -26,6 +26,12 @@ class Grid:
         self.lines = helper.read_lines(fname)
 
     def get_perimeter(self, points) -> int:
+        """
+        It also compares the first point (idx: 0) with the last point (idx: -1).
+
+        So the perimeter is calculated correctly even if the first point
+        is not repeated in the last position.
+        """
         total = 0
         for i in range(len(points)):
             curr = points[i]
@@ -38,7 +44,6 @@ class Grid:
     def start(self) -> None:
         self.d = self.dig()
         points: list[Point] = [k for k in self.d]
-        points.append(points[0])  # connect the last and the first point (for the perimeter)
         # print(points)
         area: float = my_area(points)
         # print(area)
