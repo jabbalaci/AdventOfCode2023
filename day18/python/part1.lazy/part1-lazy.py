@@ -5,18 +5,21 @@ from pathlib import Path
 from pprint import pprint
 from typing import NamedTuple
 
-import helper
-
 
 class Point(NamedTuple):
     row: int
     col: int
 
 
+def read_lines(fname: str) -> list[str]:
+    with open(fname) as f:
+        return f.read().strip().splitlines()
+
+
 class Grid:
     def __init__(self, fname: str) -> None:
         self.fname = Path(fname)
-        self.lines = helper.read_lines(fname)
+        self.lines = read_lines(fname)
 
     def start(self) -> None:
         self.d = self.dig()
