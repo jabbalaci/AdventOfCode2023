@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 
+"""
+First I tried the naive approach but I quickly realized
+that it would never finish.
+
+So I used some help from here:
+https://old.reddit.com/r/adventofcode/comments/18ohnwh/2023_day_20_part_2_understanding_why_it_works/
+"""
+
+import math
 from collections import deque
 from enum import Enum, auto
 
@@ -106,9 +115,6 @@ class Graph:
         self.connections["button"] = ["broadcaster"]
         self.parse_input()
         self.init_nodes()
-        #
-        self.low_pulses_cnt = 0
-        self.high_pulses_cnt = 0
 
     def init_nodes(self) -> None:
         for k, values in self.connections.items():
@@ -116,6 +122,8 @@ class Graph:
                 node = self.get_node(v)
                 if node.type == NodeType.CONJUNCTION:
                     node.inputs[k] = PulseType.LOW
+                elif node.type == NodeType.FLIP_FLOP:
+                    node.status = 0  # off
                 #
             #
         #
@@ -157,95 +165,64 @@ class Graph:
             #
         #
 
-    def press_button(self) -> None:
+    def press_button(self, name: str) -> bool:
         src: Node = self.get_node("button")
         dest: Node = self.get_node("broadcaster")
         pulse_pool: deque[Pulse] = deque([Pulse(src, dest, PulseType.LOW)])
 
+        stop = False
         while pulse_pool:  # while not empty
             pulse = pulse_pool.popleft()
             # self.debug2(pulse)
             src, dest, message = pulse.src, pulse.dest, pulse.message
-            if message == PulseType.LOW:
-                self.low_pulses_cnt += 1
-            else:
-                self.high_pulses_cnt += 1
+            if (src.name == name) and (message == PulseType.HIGH):
+                stop = True
+                return stop
+            #
             pulses: list[Pulse] = dest.process(message, _from=src)
             for pulse in pulses:
                 pulse_pool.append(pulse)
             #
         #
+        return stop
+
+    def who_points_to(self, dest: str) -> list[str]:
+        return [k for k, values in self.connections.items() if dest in values]
 
     def start(self) -> None:
-        for i in range(1000):
-            self.press_button()
+        nodes: list[str] = self.who_points_to("rx")
+        assert len(nodes) == 1
+        points_to_rx: str = nodes[0]
+        nodes = self.who_points_to(points_to_rx)
+        print(nodes)
+
+        collect: list[int] = []
+        for node in nodes:
+            self.init_nodes()
+            cnt = 0
+            while True:
+                stop = self.press_button(node)
+                cnt += 1
+                if stop:
+                    break
+                #
+            #
+            collect.append(cnt)
         #
-        print("# low pulses counter: ", self.low_pulses_cnt)
-        print("# high pulses counter:", self.high_pulses_cnt)
+        print(collect)
         print("---")
-        result = self.low_pulses_cnt * self.high_pulses_cnt
+        result = math.lcm(*collect)
         print(result)
-
-    def debug2(self, pulse: Pulse) -> None:
-        src, dest, message = pulse.src, pulse.dest, pulse.message
-        msg = "-low"
-        if message == PulseType.HIGH:
-            msg = "-high"
-        #
-        print(f"{src.name} {msg}-> {dest}")
-
-    def debug(self) -> None:
-        for _, node in self.nodes.items():
-            print(node)
-        #
-        print("---")
-        for k, v in self.connections.items():
-            print(f"{k} -> {v}")
-
-    def write_dot_output(self) -> None:
-        sb = [
-            """
-digraph D {
-    // graph [concentrate=true];
-    // layout=neato;
-    // rankdir=LR;
-    // edge [dir=none];
-""".strip()
-        ]
-        #
-        sb.append("")
-        for k, values in self.connections.items():
-            # print(f"{k} -> {v}")
-            for v in values:
-                kk = self.get_node(k).get_prefixed_name(dot=True)
-                vv = self.get_node(v).get_prefixed_name(dot=True)
-                sb.append(f'    "{kk}" -> "{vv}";')
-        #
-        sb.append("}")
-        #
-        text = "\n".join(sb)
-        fname = "graph.dot"
-        with open(fname, "w") as f:
-            f.write(text)
-        #
-        print(f"# {fname} was created")
 
 
 # ----------------------------------------------------------------------------
 
 
 def main() -> None:
-    # fname = "example1.txt"
-    # fname = "example2.txt"
     fname = "input.txt"
 
     g = Graph(fname)
-
-    # g.write_dot_output()
-
     g.start()
-
-    # g.debug()
 
 
 ##############################################################################
