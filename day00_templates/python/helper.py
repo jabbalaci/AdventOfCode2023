@@ -8,6 +8,11 @@ class Point(NamedTuple):
     y: int
 
 
+class Line(NamedTuple):
+    a: Point
+    b: Point
+
+
 class Interval(NamedTuple):
     a: Point
     b: Point
@@ -25,6 +30,15 @@ def read_lines(fname: str) -> list[str]:
 
 def read_lines_as_ints(fname: str) -> list[int]:
     return [int(s) for s in read_lines(fname)]
+
+
+def sign(n) -> int:
+    if n < 0:
+        return -1
+    elif n > 0:
+        return 1
+    else:
+        return 0
 
 
 def angle(a: Point, b: Point, c: Point) -> float:
