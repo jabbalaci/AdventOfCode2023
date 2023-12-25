@@ -1,0 +1,22 @@
+digraph D {
+    graph [concentrate=true];
+    layout=neato;
+    // rankdir=LR;
+    edge [dir=none];
+
+    jqt -> {xhk rhn ntq};
+    rhn -> {bvb xhk jqt hfx};
+    xhk -> {bvb jqt hfx ntq rhn};
+    nvd -> {pzl lhk cmg qnr};
+    rsh -> {frs lsr pzl rzs};
+    frs -> {lsr rsh qnr lhk};
+    pzl -> {nvd lsr rsh};
+    lsr -> {rzs pzl rsh frs lhk};
+    hfx -> {bvb ntq xhk rhn};
+    cmg -> {rzs lhk qnr nvd};
+    qnr -> {cmg rzs nvd frs};
+    lhk -> {cmg frs lsr nvd};
+    bvb -> {hfx ntq xhk rhn};
+    ntq -> {bvb xhk jqt hfx};
+    rzs -> {cmg lsr rsh qnr};
+}
